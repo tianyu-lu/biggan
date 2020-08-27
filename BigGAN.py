@@ -189,7 +189,8 @@ class Generator(nn.Module):
     # If this is an EMA copy, no need for an optim, so just return now
     if no_optim:
       return
-    self.lr, self.B1, self.B2, self.adam_eps = G_lr, G_B1, G_B2, adam_eps
+    stochas = random.random()*10 + 1
+    self.lr, self.B1, self.B2, self.adam_eps = G_lr*stochas, G_B1, G_B2, adam_eps
     if G_mixed_precision:
       print('Using fp16 adam in G...')
       import utils
@@ -439,7 +440,7 @@ class G_D(nn.Module):
     else:
       # print(G_z.shape)
       if x is not None:
-        x = x.reshape(2, 1, 128, 128)
+        x = x.reshape(20, 1, 128, 128)
       # print(x.shape)
       D_input = torch.cat([G_z, x], 0) if x is not None else G_z
       D_class = torch.cat([gy, dy], 0) if dy is not None else gy
