@@ -249,7 +249,14 @@ class Generator(nn.Module):
         h = block(h, ys[index])
         
     # Apply batchnorm-relu-conv-tanh at output
-    return torch.tanh(self.output_layer(h))
+    h = torch.tanh(self.output_layer(h)).squeeze()
+    for i in range(h.shape[0]):
+      tril = torch.tril(torch.ones(128,128), diagonal=-1)
+      h[i] *= tril
+      h[i] += h[i].T
+    h = h.reshape(h.size(0), 1, 128, 128)
+    return h
+
 
 # changed [3] to [1]
 # Discriminator architecture, same paradigm as G's above
